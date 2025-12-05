@@ -2,17 +2,22 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>lite3_sim_bringup</name>
-  <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <version>0.1.0</version>
+  <description>Gazebo + RViz bringup for the Lite3 omnidirectional base with Livox Mid-360 Lidar.</description>
   <maintainer email="mingqian.chen@tum.de">mingqian</maintainer>
-  <license>TODO: License declaration</license>
+  <license>Apache-2.0</license>
 
-  <test_depend>ament_copyright</test_depend>
-  <test_depend>ament_flake8</test_depend>
-  <test_depend>ament_pep257</test_depend>
-  <test_depend>python3-pytest</test_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>gazebo_ros</depend>
+  <depend>launch</depend>
+  <depend>launch_ros</depend>
+  <depend>lite3_sim_description</depend>
+  <depend>robot_state_publisher</depend>
+  <depend>rviz2</depend>
+  <depend>xacro</depend>
 
   <export>
-    <build_type>ament_python</build_type>
+    <build_type>ament_cmake</build_type>
   </export>
 </package>

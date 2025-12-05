@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<robot name="lite3" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <xacro:include filename="$(find ros2_livox_simulation)/urdf/mid360.xacro"/>
+
+  <!-- Basic dimensions -->
+  <!-- DeepRobotics Lite3 footprint; reduced height (0.32 m) to keep lidar clear -->
+  <xacro:property name="chassis_length" value="0.61"/>
+  <xacro:property name="chassis_width" value="0.37"/>
+  <xacro:property name="chassis_height" value="0.28"/>
+  <xacro:property name="chassis_mass" value="15.0"/>
+  <xacro:property name="wheel_radius" value="0.07"/>
+  <xacro:property name="wheel_thickness" value="0.04"/>
+  <xacro:property name="livox_offset_x" value="0.1345"/>
+  <xacro:property name="livox_offset_y" value="0.0"/>
+  <xacro:property name="livox_offset_z" value="0.2"/>
+  <!-- Pitch 7.8 degrees per static TF broadcaster -->
+  <xacro:property name="livox_pitch" value="0.136135684"/>
+
+  <!-- Materials -->
+  <material name="lite3_blue">
+    <color rgba="0.1 0.4 0.9 1.0"/>
+  </material>
+
+  <material name="lite3_black">
+    <color rgba="0.05 0.05 0.05 1.0"/>
+  </material>
+
+  <!-- Base footprint -->
+  <link name="base_footprint"/>
+
+  <!-- Chassis -->
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="${chassis_length} ${chassis_width} ${chassis_height}"/>
+      </geometry>
+      <material name="lite3_blue"/>
+    </visual>
+    <collision>
+      <geometry>
+        <box size="${chassis_length} ${chassis_width} ${chassis_height}"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <mass value="${chassis_mass}"/>
+      <inertia ixx="0.25" ixy="0" ixz="0" iyy="0.35" iyz="0" izz="0.45"/>
+    </inertial>
+  </link>
+
+  <joint name="base_footprint_to_base_link" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 ${chassis_height / 2.0}" rpy="0 0 0"/>
+  </joint>
+
+  <!-- Decorative omni wheels -->
+  <xacro:macro name="lite3_wheel" params="name x y">
+    <link name="${name}">
+      <visual>
+        <geometry>
+          <cylinder radius="${wheel_radius}" length="${wheel_thickness}"/>
+        </geometry>
+        <material name="lite3_black"/>
+      </visual>
+    </link>
+    <joint name="${name}_joint" type="fixed">
+      <parent link="base_link"/>
+      <child link="${name}"/>
+      <origin xyz="${x} ${y} -${chassis_height / 2.0}" rpy="0 1.5708 0"/>
+    </joint>
+  </xacro:macro>
+
+  <xacro:lite3_wheel name="wheel_front_left"  x="${chassis_length / 2.0 - 0.05}"  y="${chassis_width / 2.0 - 0.05}"/>
+  <xacro:lite3_wheel name="wheel_front_right" x="${chassis_length / 2.0 - 0.05}"  y="-${chassis_width / 2.0 - 0.05}"/>
+  <xacro:lite3_wheel name="wheel_rear_left"   x="-${chassis_length / 2.0 - 0.05}" y="${chassis_width / 2.0 - 0.05}"/>
+  <xacro:lite3_wheel name="wheel_rear_right"  x="-${chassis_length / 2.0 - 0.05}" y="-${chassis_width / 2.0 - 0.05}"/>
+
+  <!-- Gazebo settings -->
+  <gazebo reference="base_link">
+    <material>Gazebo/Blue</material>
+  </gazebo>
+
+  <gazebo>
+    <plugin name="lite3_planar_move" filename="libgazebo_ros_planar_move.so">
+      <ros>
+        <namespace>/lite3</namespace>
+        <remapping>cmd_vel:=/cmd_vel</remapping>
+        <remapping>odom:=/odom</remapping>
+      </ros>
+      <body_name>base_link</body_name>
+      <odom_frame>odom</odom_frame>
+      <robot_base_frame>base_link</robot_base_frame>
+      <publish_tf>true</publish_tf>
+      <update_rate>100.0</update_rate>
+      <publish_rate>20.0</publish_rate>
+    </plugin>
+  </gazebo>
+
+  <xacro:mid360 name="livox_link" parent="base_link" topic="/livox/lidar">
+    <origin xyz="${livox_offset_x} ${livox_offset_y} ${livox_offset_z}" rpy="0 ${livox_pitch} 0"/>
+  </xacro:mid360>
+
+</robot>
+

@@ -1,0 +1,6 @@
+[submodule "modules/livox_laser_simulation_ros2"]
+	path = modules/livox_laser_simulation_ros2
+	url = https://github.com/LCAS/livox_laser_simulation_ros2.git
+[submodule "modules/livox_ros_driver2"]
+	path = modules/livox_ros_driver2
+	url = https://github.com/Livox-SDK/livox_ros_driver2.git
